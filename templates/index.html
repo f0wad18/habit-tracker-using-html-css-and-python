@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Habit Tracker</h1>
+        <div class="habits">
+            <!-- Display existing habits -->
+            {% for habit in habits %}
+            <div class="habit-item">
+                <span class="habit-name">{{ habit.name }}</span>
+                {% if habit.completed %}
+                <span class="completed">Completed</span>
+                {% else %}
+                <span class="not-completed">Not Completed</span>
+                {% endif %}
+                {% if habit.completed %}
+                <button class="incomplete-btn" onclick="incompleteHabit('{{ habit.name }}')">Incomplete</button>
+                {% else %}
+                <button class="complete-btn" onclick="completeHabit('{{ habit.name }}')">Complete</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <form id="habitForm" onsubmit="addHabit(event)">
+            <input type="text" id="habitInput" name="habit_name" placeholder="Enter habit name" required>
+            <button type="submit">Add Habit</button>
+        </form>
+    </div>
+
+    <script>
+        function addHabit(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get habit name from input
+            var habitName = document.getElementById('habitInput').value;
+
+            // Create AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/add_habit', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    updateHabitList(); // Update habit list on success
+                } else {
+                    alert('Failed to add habit. Please try again.');
+                }
+            };
+            xhr.onerror = function() {
+                alert('Request failed. Please check your connection and try again.');
+            };
+            xhr.send('habit_name=' + encodeURIComponent(habitName));
+        }
+
+        function completeHabit(habitName) {
+            // Create AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/complete_habit', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    updateHabitList(); // Update habit list on success
+                } else {
+                    alert('Failed to complete habit. Please try again.');
+                }
+            };
+            xhr.onerror = function() {
+                alert('Request failed. Please check your connection and try again.');
+            };
+            xhr.send('habit_name=' + encodeURIComponent(habitName));
+        }
+
+        function incompleteHabit(habitName) {
+            // Create AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/incomplete_habit', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    updateHabitList(); // Update habit list on success
+                } else {
+                    alert('Failed to mark habit as incomplete. Please try again.');
+                }
+            };
+            xhr.onerror = function() {
+                alert('Request failed. Please check your connection and try again.');
+            };
+            xhr.send('habit_name=' + encodeURIComponent(habitName));
+        }
+
+        function updateHabitList() {
+            // Fetch updated habits from server
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var updatedHabits = JSON.parse(xhr.responseText);
+                    var habitsContainer = document.querySelector('.habits');
+                    habitsContainer.innerHTML = ''; // Clear current list
+
+                    // Render updated habit list
+                    updatedHabits.forEach(function(habit) {
+                        var habitItem = document.createElement('div');
+                        habitItem.classList.add('habit-item');
+                        habitItem.innerHTML = `
+                            <span class="habit-name">${habit.name}</span>
+                            ${habit.completed ? '<span class="completed">Completed</span>' : '<span class="not-completed">Not Completed</span>'}
+                            ${habit.completed ? '<button class="incomplete-btn" onclick="incompleteHabit(\'' + habit.name + '\')">Incomplete</button>' : '<button class="complete-btn" onclick="completeHabit(\'' + habit.name + '\')">Complete</button>'}
+                        `;
+                        habitsContainer.appendChild(habitItem);
+                    });
+                } else {
+                    alert('Failed to fetch updated habits. Please reload the page.');
+                }
+            };
+            xhr.onerror = function() {
+                alert('Request failed. Please check your connection and try again.');
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
