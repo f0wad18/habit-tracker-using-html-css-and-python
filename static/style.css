@@ -63,3 +63,34 @@ form button {
 form button:hover {
     background-color: #0056b3;
 }
+
+/* Styles for Complete and Incomplete buttons */
+.complete-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.complete-btn:hover {
+    background-color: #218838;
+}
+
+.incomplete-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.incomplete-btn:hover {
+    background-color: #c82333;
+}
